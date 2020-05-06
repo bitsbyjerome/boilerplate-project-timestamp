@@ -22,10 +22,10 @@ app.get("/", function (req, res) {
 //API endpoint
 app.get("/api/timestamp/:date_string?", function (req, res) {
 
-  console.log(req.params.date_string);
-  //parse
+    //get params
     let dateString = req.params.date_string;
 
+    //check if param is null
     function isNull(dateString){
       return dateString===undefined?true:false;
     }
@@ -44,13 +44,53 @@ app.get("/api/timestamp/:date_string?", function (req, res) {
             break;
 
         case false:
-            date = new Date(dateString);
-            res.json(
-                {
-                    unix:date.getTime(),
-                    utc:date.toUTCString()
+          //get timestamp or date from dateString
+            let dateParse = Date.parse(dateString);
+            //let dateParse = new Date(dateString).toString();
+
+            //dateToIso = new Date(dateString)
+
+            console.log('dateParse: '+ dateParse);
+            //if we can't get timestamp it's already a timestamp or an invalid date
+
+            //is it a timestamp or date ?
+            if(dateString.length>10){
+              //it's a timestamp
+                //if it's a valid timestamp
+                date = new Date(parseInt(dateString));
+                //date = new Date(parseInt(dateString));
+                console.log('valid timestamp')
+                res.json(
+                    {
+                        unix:date.getTime(),
+                        utc:date.toUTCString()
+                    }
+                );
+
+            }else{
+
+              //is it a valid date or not?
+                if(isNaN(dateParse)){
+                    //invalid date
+                        console.log('invalid date')
+                        //date = dateString;
+                        res.json(
+                            {
+                                error:'Invalid Date'
+                            }
+                        );
+                }else{
+                    //if it's a valid date
+                    date = new Date(dateString);
+                    res.json(
+                        {
+                            unix:date.getTime(),
+                            utc:date.toUTCString()
+                        }
+                    );
                 }
-            );
+            }
+
             break;
         default:
             res.json(
@@ -63,6 +103,8 @@ app.get("/api/timestamp/:date_string?", function (req, res) {
     }
 
 });
+
+
 
 
 
